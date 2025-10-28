@@ -12,6 +12,7 @@ export interface IPayment {
   expiredTime: number;
   descriptions: string;
   initialAmount: string;
+  isTransferFiat: boolean;
   user: Schema.Types.ObjectId;
   token: Schema.Types.ObjectId;
   status: 'pending' | 'completed' | 'expired' | 'cancelled';
@@ -29,6 +30,7 @@ const Payment = new Schema<IPayment>(
     escrowAddress: { type: String, required: true },
     initialAmount: { type: String, required: true },
     isTransfer: { type: Boolean, required: true, default: false },
+    isTransferFiat: { type: Boolean, required: true, default: false },
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     token: { type: Schema.Types.ObjectId, ref: 'Token', required: true },
     currency: { type: String, default: 'USD' },

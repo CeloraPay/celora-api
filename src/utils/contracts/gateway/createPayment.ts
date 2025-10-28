@@ -4,8 +4,9 @@ import getConfigs from "../getProvider";
 import envs from "../../../config/envs";
 
 import GATEWAY_ABI from "../../../abi/GATEWAY_ABI.json";
+import getLogsFromResult from "../getLogsFromResult";
 
-const createPayment = async (receiver: string, token: string, amount: string) => {
+const createPayment = async (receiver: string, token: string, amount: string, isTransferFiat: boolean) => {
     const { GATEWAY_CONTRACT } = envs()
     const { wallet } = getConfigs()
 
@@ -21,19 +22,12 @@ const createPayment = async (receiver: string, token: string, amount: string) =>
         token,
         amounts,
         durationSeconds,
+        isTransferFiat
     );
 
     const result = await tx.wait();
 
-    const event = result.logs
-        .map(log => {
-            try {
-                return gatewayContract.interface.parseLog(log);
-            } catch {
-                return null;
-            }
-        })
-        .filter(e => e && e.name === "PaymentCreated")[0];
+    const event = getLogsFromResult(result, gatewayContract, "PaymentCreated")
 
     if (!event) {
         return false
@@ -44,7 +38,6 @@ const createPayment = async (receiver: string, token: string, amount: string) =>
         escrowAddress,
         expiresAt
     } = event.args;
-
 
     return {
         invoiceId,

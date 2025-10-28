@@ -21,7 +21,7 @@ const convertUsdToToken = async (symbol: string, usdAmount: string) => {
 
   const result = await response.json();
 
-  const amount = new BigNumber(usdAmount).div(result.USD).toFixed(18)
+  const amount = new BigNumber(usdAmount).div(result.USD).toFixed(4)
 
   return amount
 };

@@ -21,6 +21,7 @@ const createPaymentHandler: RequestHandler[] = [
             amount: z.string(),
             currency: z.string(),
             descriptions: z.string(),
+            isTransferFiat: z.boolean(),
             redirectUrl: z
                 .string({
                     required_error: 'redirectUrl is required',
@@ -33,7 +34,7 @@ const createPaymentHandler: RequestHandler[] = [
     }),
     async (req, res) => {
         try {
-            const { token, amount, descriptions, currency, redirectUrl } = req.body;
+            const { token, amount, descriptions, isTransferFiat, currency, redirectUrl } = req.body;
             const user = req.user as IUser;
 
             let selectedCurrency = 'usd';
@@ -53,24 +54,26 @@ const createPaymentHandler: RequestHandler[] = [
             const tokens = await getTokens() as IToken[]
             const tokensName = tokens.map((token) => token.symbol)
 
-            if (!tokensName.includes(token)) {
+            if (!tokensName.includes(token.toLowerCase())) {
                 return res.status(400).j({
                     message: 'Token does not exist',
                 });
             }
 
-            const selectToken = tokens.filter((t) => t.symbol == token)[0]
+            const selectToken = tokens.filter((t) => t.symbol == token.toLowerCase())[0]
 
             const number = convertCurrencyToUsd(amount, existingCurrency.rate);
-            console.log(number)
+            console.log("usd:", number)
 
             const amounts = await convertUsdToToken(selectToken.symbol, number);
+            console.log("celo:", amounts)
 
             const newPayment = new Payment({
                 redirectUrl, // @ts-ignore
                 descriptions,
                 amount: number,
                 user: user._id,
+                isTransferFiat,
                 status: 'pending',
                 initialAmount: amounts,
                 token: selectToken._id,
@@ -78,7 +81,7 @@ const createPaymentHandler: RequestHandler[] = [
                 expiredTime: Date.now() + FIFTEEN_MINUTES,
             });
 
-            const result = await createPayment(user.address, selectToken.address, amounts)
+            const result = await createPayment(user.address, selectToken.address, amounts, isTransferFiat)
 
             if (!result) {
                 return res.status(500).j({
