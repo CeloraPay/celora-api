@@ -6,6 +6,7 @@ const saveDefaultToken = async () => {
             logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/5567.png",
             symbol: "celo",
             address: "0x0000000000000000000000000000000000000000",
+            decimal: 18
         },
     ]
 

@@ -12,6 +12,7 @@ import saveCurrencies from './utils/saveCurrencies';
 import saveDefaultToken from './utils/saveDefaultToken';
 import checkExpiredTime from './utils/payments/checkExpiredTime';
 import customResponseHandler from './middlewares/customResponseHandler';
+import checkFinalize from './utils/contracts/gateway/checkFinalize';
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 saveCurrencies();
 saveDefaultToken()
 checkExpiredTime();
+checkFinalize()
 
 app.use(customResponseHandler);
 app.use(routes);

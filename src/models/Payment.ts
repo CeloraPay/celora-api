@@ -7,17 +7,19 @@ import paymentToExpired from '../utils/payments/paymentToExpired';
 export interface IPayment {
   amount: string;
   currency: string;
+  finalized: boolean;
   isTransfer: boolean;
   redirectUrl: string;
   expiredTime: number;
   descriptions: string;
   initialAmount: string;
   isTransferFiat: boolean;
+  depositedAmount: number;
   user: Schema.Types.ObjectId;
   token: Schema.Types.ObjectId;
   status: 'pending' | 'completed' | 'expired' | 'cancelled';
   invoiceId?: string;
-  escrowAddress?: string;
+  paymentAddr?: string;
 }
 
 const Payment = new Schema<IPayment>(
@@ -27,8 +29,10 @@ const Payment = new Schema<IPayment>(
     expiredTime: { type: Number, required: true },
     redirectUrl: { type: String, required: true },
     descriptions: { type: String, required: true },
-    escrowAddress: { type: String, required: true },
+    paymentAddr: { type: String, required: true },
     initialAmount: { type: String, required: true },
+    depositedAmount: { type: Number, required: true },
+    finalized: { type: Boolean, required: true, default: false },
     isTransfer: { type: Boolean, required: true, default: false },
     isTransferFiat: { type: Boolean, required: true, default: false },
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },

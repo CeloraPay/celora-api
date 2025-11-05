@@ -63,10 +63,8 @@ const createPaymentHandler: RequestHandler[] = [
             const selectToken = tokens.filter((t) => t.symbol == token.toLowerCase())[0]
 
             const number = convertCurrencyToUsd(amount, existingCurrency.rate);
-            console.log("usd:", number)
 
             const amounts = await convertUsdToToken(selectToken.symbol, number);
-            console.log("celo:", amounts)
 
             const newPayment = new Payment({
                 redirectUrl, // @ts-ignore
@@ -74,14 +72,16 @@ const createPaymentHandler: RequestHandler[] = [
                 amount: number,
                 user: user._id,
                 isTransferFiat,
+                finalized: false,
                 status: 'pending',
+                depositedAmount: 0,
                 initialAmount: amounts,
                 token: selectToken._id,
                 currency: selectedCurrency,
                 expiredTime: Date.now() + FIFTEEN_MINUTES,
             });
 
-            const result = await createPayment(user.address, selectToken.address, amounts, isTransferFiat)
+            const result = await createPayment(user.address, selectToken.address, selectToken.decimal, amounts, isTransferFiat)
 
             if (!result) {
                 return res.status(500).j({
@@ -90,7 +90,7 @@ const createPaymentHandler: RequestHandler[] = [
             }
 
             newPayment.invoiceId = result.invoiceId
-            newPayment.escrowAddress = result.escrowAddress
+            newPayment.paymentAddr = result.paymentAddr
 
             await newPayment.save()
 
