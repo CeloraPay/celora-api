@@ -11,12 +11,12 @@ const addUserHandler: RequestHandler[] = [
     validatorMiddleware({
         body: z.object({
             address: z.string(),
-            description: z.string()
+            name: z.string()
         }),
     }),
     async (req, res) => {
         try {
-            const { address, description } = req.body;
+            const { address, name } = req.body;
 
             if (!isAddress(address)) {
                 return res.status(400).j({
@@ -34,14 +34,14 @@ const addUserHandler: RequestHandler[] = [
             }
 
             const newUser = new User({
-                plan: 0,
+                plan: 1,
+                name,
                 address,
-                description,
                 telegramId: "",
                 apikey: randomKey()
             })
 
-            const result = await registerReceiver(address, description)
+            const result = await registerReceiver(address, name)
 
             if (!result) {
                 return res.status(400).j({
