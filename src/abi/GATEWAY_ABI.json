@@ -340,7 +340,7 @@
             "internalType": "uint256"
           },
           {
-            "name": "description",
+            "name": "name",
             "type": "string",
             "internalType": "string"
           }
@@ -542,7 +542,7 @@
         "internalType": "address"
       },
       {
-        "name": "_description",
+        "name": "_name",
         "type": "string",
         "internalType": "string"
       }
