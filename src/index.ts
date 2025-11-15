@@ -13,6 +13,7 @@ import saveDefaultToken from './utils/saveDefaultToken';
 import checkExpiredTime from './utils/payments/checkExpiredTime';
 import customResponseHandler from './middlewares/customResponseHandler';
 import checkFinalize from './utils/contracts/gateway/checkFinalize';
+import updateUserDetails from './utils/user/updateUserDetails';
 
 const app = express();
 
